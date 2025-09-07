@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: linear-gradient(to right, #587ff6, #ffffff);
+        }
+
+        .toDoList {
+            background-image: linear-gradient(to right, #587ff6, #ffffff);
+
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #taskInput {
+
+            width: 60%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            border-radius: 20px;
+        }
+
+        #addTaskButton {
+            padding: 10px 20px;
+            border: none;
+            background-color: #587ff6;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+        #addTaskButton:hover {
+            background-color: #466fe0;
+        }
+
+        .deleteButton {
+            padding: 5px 10px;
+            border: none;
+            background-color: #ff4d4d;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .deleteButton:hover {
+            background-color: #e04343;
+        }
+
+        .Task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toDoList">
+        <div class="header">
+            <h1>My To-Do List</h1>
+            <input type="text" id="taskInput" placeholder="Add a new task..." autocomplete="off">
+            <button id="addTaskButton">Add Task</button>
+        </div>
+        <div class="list">
+            <h3>Sample Task</h3>
+        </div>
+    </div>
+
+    <script>
+        let inputTask = document.getElementById('taskInput');
+        let list = document.querySelector('.list');
+
+        const GetToDoListFromLocal = () => {
+            return JSON.parse(localStorage.getItem("Task")) || [];
+        }
+        let LocalToDOList = GetToDoListFromLocal();
+
+        const addToDoElementDynamicly = (curElem) => {
+            const div = document.createElement('div');
+            div.classList.add("Task");
+            div.innerHTML = `<li>${curElem}</li><button class="deleteButton">DELETE</button>`;
+            list.append(div);
+        };
+
+        const addToList = () => {
+
+            const inputValue = inputTask.value.trim();
+            if(inputValue===""){
+                return;
+            }
+            else if (!LocalToDOList.includes(inputValue)) {
+                LocalToDOList.push(inputValue);
+                LocalToDOList = [...new Set(LocalToDOList)];
+                console.log(LocalToDOList);
+                localStorage.setItem("Task", JSON.stringify(LocalToDOList));
+                addToDoElementDynamicly(inputValue);
+                inputTask.value = "";
+            }
+            else {
+                alert("All ready present");
+                inputTask.value = "";
+            }
+        }
+
+        const ShowTask = () => {
+            list.innerHTML = "";
+            LocalToDOList.forEach(element => {
+                addToDoElementDynamicly(element);
+            });
+        };
+        document.getElementById('addTaskButton').addEventListener('click', () => {
+            addToList();
+        });
+
+
+
+        list.addEventListener('click',()=>{
+            DeleteTheTask(event);
+        });
+
+        const DeleteTheTask=(event)=>{
+                list.addEventListener('click',(event)=>{
+                const ClickButton=event.target.classList;
+                if(ClickButton.contains('deleteButton')){
+                    const Click=event.target
+                    const liContant=Click.previousElementSibling.innerText;
+                   LocalToDOList=LocalToDOList.filter((curtodo)=>{
+                    return curtodo!==liContant.toLowerCase();
+                   });
+                   localStorage.setItem("Task", JSON.stringify(LocalToDOList));
+                   ShowTask();
+                }
+            });
+        }
+        ShowTask();
+    </script>
+
+
+
+</body>
+
+</html>
